@@ -1,0 +1,24 @@
+@import '../../styles/theme.scss';
+
+.index {
+  margin: 62px 36px;
+}
+
+.input-container {
+  border-radius: 30px;
+  background-color: #F8FAFC;
+  padding: 20px;
+
+  textarea {
+    width: 100%;
+    height: 396px;
+  }
+
+  .placeholder {
+    color: #B8BCCA;
+  }
+}
+
+.parse-btn {
+  margin-top: 58px;
+}

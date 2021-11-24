@@ -1,0 +1,12 @@
+@import 'styles/theme.scss';
+
+.btn {
+  background-color: $primary-color;
+  color: #FFFFFF;
+  border-radius: 30px;
+  height: 90px;
+}
+
+.btn__hover {
+  background-color: $primary-color-hover;
+}
