@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@microsoft/recognizers-text-date-time": "^1.3.0",
+    "dayjs": "1.10.7",
     "wx-server-sdk": "latest"
   }
 }

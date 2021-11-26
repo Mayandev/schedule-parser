@@ -1,7 +1,7 @@
 export default {
   pages: [
-    'pages/edit/edit',
     'pages/index/index',
+    'pages/edit/edit',
   ],
   window: {
     backgroundTextStyle: 'light',
