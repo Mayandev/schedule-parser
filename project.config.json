@@ -5,7 +5,7 @@
   "description": "Give me a text, give you a schedule",
   "appid": "wx99f974799c46e3af",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": false,
     "enhance": false,
     "postcss": false,

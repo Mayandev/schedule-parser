@@ -50,6 +50,51 @@ export default function Edit() {
   }, [startTime]);
 
   const saveSchedule = async () => {
+    const { platform } = await Taro.getSystemInfo();
+    Taro.showLoading({ title: "正在保存..." });
+    const downloadUrl =
+      "https://service-p0x2esh8-1254432069.gz.apigw.tencentcs.com/release/ics";
+    const data = {
+      start: String(startTime.unix()),
+      end: String(endTime.unix()),
+      title,
+      description: text,
+      alarm: String(alertTime.value)
+    };
+    const paramStr = Object.entries(data)
+      .map(e => e.join("="))
+      .join("&");
+
+    Taro.downloadFile({
+      url: `${downloadUrl}?${paramStr}`,
+      filePath: Taro.env.USER_DATA_PATH+`/${title}.ics`,
+      success: async res => {
+        const { filePath } = res;
+        // @ts-ignore
+        Taro.saveFileToDisk({
+          filePath,
+          success: () => {
+            Taro.hideLoading();
+          },
+          fail: ({errMsg}) => {
+            Taro.showModal({ content: JSON.stringify(errMsg) });
+          }
+        });
+      },
+      fail: ({ errMsg }) => {
+        Taro.showModal({ content: JSON.stringify(errMsg, null, 2) });
+        Taro.showToast({
+          title: "网络异常",
+          // @ts-ignore
+          icon: "error"
+        });
+      }
+    });
+    return;
+    if (["mac", "windows"].includes(platform)) {
+      
+    }
+
     try {
       // @ts-ignore
       const { errMsg } = await Taro.addPhoneCalendar({
@@ -64,7 +109,6 @@ export default function Edit() {
       if (errMsg === "addPhoneCalendar:ok") {
         await Taro.showToast({ title: "保存成功", icon: "success" });
       }
-
     } catch (error) {
       const { errMsg = "" } = error;
 
