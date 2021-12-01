@@ -2,22 +2,22 @@ import { CountUnitText } from "./types"
 
 export const AlertTime = [
   {
-    id: 1,
+    id: 0,
     text: '30分钟',
     value: 30
   },
   {
-    id: 2,
+    id: 1,
     text: '1小时',
     value: 60
   },
   {
-    id: 3,
+    id: 2,
     text: '2小时',
     value: 120
   },
   {
-    id: 4,
+    id: 3,
     text: '1天',
     value: 1440
   }

@@ -1,4 +1,4 @@
-import Taro, { useRouter } from "@tarojs/taro";
+import Taro, { useRouter, useShareAppMessage } from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import { isEmpty } from "lodash";
 import { View, Form, Button, Input, Text, Picker } from "@tarojs/components";
@@ -12,15 +12,29 @@ const CURRENT = dayjs();
 
 export default function Edit() {
   const {
-    params: { time = "", text = "" }
+    params: {
+      time = "",
+      text = "",
+      initTitle = "日程标题",
+      initAlertTime = AlertTime[0].id
+    }
   } = useRouter();
   const targetTime: Schedule = JSON.parse(time);
 
   const [startTime, setStartTime] = useState(dayjs(targetTime.start));
   const [endTime, setEndTime] = useState(dayjs(targetTime.end));
-  const [alertTime, setAlertTime] = useState(AlertTime[0]);
-  const [title, setTitle] = useState("日程标题");
+  const [alertTime, setAlertTime] = useState(AlertTime[Number(initAlertTime)]);
+  const [title, setTitle] = useState(initTitle);
   const [counterUnit, setCounterUnit] = useState("day" as CountUnit);
+  const [editText, setEditText] = useState(text);
+  useShareAppMessage(() => {
+    return {
+      path: `/pages/edit/edit?time=${JSON.stringify({
+        start: startTime,
+        end: endTime
+      })}&text=${editText}&initTitle=${title}&initAlertTime=${alertTime.id}`
+    };
+  });
 
   const changeAlertTime = async e => {
     const index = e.detail.value;
@@ -51,48 +65,50 @@ export default function Edit() {
 
   const saveSchedule = async () => {
     const { platform } = await Taro.getSystemInfo();
-    Taro.showLoading({ title: "正在保存..." });
-    const downloadUrl =
-      "https://service-p0x2esh8-1254432069.gz.apigw.tencentcs.com/release/ics";
-    const data = {
-      start: String(startTime.unix()),
-      end: String(endTime.unix()),
-      title,
-      description: text,
-      alarm: String(alertTime.value)
-    };
-    const paramStr = Object.entries(data)
-      .map(e => e.join("="))
-      .join("&");
 
-    Taro.downloadFile({
-      url: `${downloadUrl}?${paramStr}`,
-      filePath: Taro.env.USER_DATA_PATH+`/${title}.ics`,
-      success: async res => {
-        const { filePath } = res;
-        // @ts-ignore
-        Taro.saveFileToDisk({
-          filePath,
-          success: () => {
-            Taro.hideLoading();
-          },
-          fail: ({errMsg}) => {
-            Taro.showModal({ content: JSON.stringify(errMsg) });
-          }
-        });
-      },
-      fail: ({ errMsg }) => {
-        Taro.showModal({ content: JSON.stringify(errMsg, null, 2) });
-        Taro.showToast({
-          title: "网络异常",
-          // @ts-ignore
-          icon: "error"
-        });
-      }
-    });
-    return;
     if (["mac", "windows"].includes(platform)) {
-      
+      Taro.showLoading({ title: "正在保存..." });
+      const downloadUrl =
+        "https://service-p0x2esh8-1254432069.gz.apigw.tencentcs.com/release/ics";
+      const data = {
+        start: String(startTime.unix()),
+        end: String(endTime.unix()),
+        title,
+        description: editText,
+        alarm: String(alertTime.value)
+      };
+      const paramStr = Object.entries(data)
+        .map(e => e.join("="))
+        .join("&");
+
+      Taro.downloadFile({
+        url: `${downloadUrl}?${paramStr}`,
+        filePath: Taro.env.USER_DATA_PATH + `/${title}.ics`,
+        success: async res => {
+          const { filePath } = res;
+          // @ts-ignore
+          Taro.saveFileToDisk({
+            filePath,
+            success: () => {
+              Taro.hideLoading();
+            },
+            fail: ({ errMsg }) => {
+              Taro.showModal({ content: JSON.stringify(errMsg) });
+              Taro.hideLoading();
+            }
+          });
+        },
+        fail: ({ errMsg }) => {
+          Taro.showModal({ content: JSON.stringify(errMsg, null, 2) });
+          Taro.showToast({
+            title: "网络异常",
+            // @ts-ignore
+            icon: "error"
+          });
+          Taro.hideLoading();
+        }
+      });
+      return;
     }
 
     try {
@@ -101,7 +117,7 @@ export default function Edit() {
         title,
         startTime: startTime.unix(),
         endTime: endTime.unix(),
-        description: text,
+        description: editText,
         alarm: true,
         alarmOffset: alertTime.value * 60
       });
@@ -150,6 +166,7 @@ export default function Edit() {
             onInput={e => setTitle(e.detail.value)}
             placeholder="日程标题"
             placeholderClass="placeholder"
+            value={title}
           ></Input>
         </View>
         <View className="picker">
@@ -187,10 +204,11 @@ export default function Edit() {
         </Picker>
         <View className="form-item">
           <Input
+            onInput={e => setEditText(e.detail.value)}
             className=""
             placeholder="日程描述（默认填充复制内容）"
             placeholderClass="placeholder"
-            value={text}
+            value={editText}
           ></Input>
         </View>
         <Button onClick={saveSchedule} className="btn" hoverClass="btn__hover">

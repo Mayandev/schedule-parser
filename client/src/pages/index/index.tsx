@@ -46,7 +46,7 @@ export default class Index extends Component {
       }
 
       Taro.navigateTo({
-        url: `/pages/edit/edit?time=${JSON.stringify(result)}&text=${text}&from=redirect`
+        url: `/pages/edit/edit?time=${JSON.stringify(result)}&text=${text}&from=redirect&initTitle=`
       });
     } catch (error) {
         // @ts-ignore
