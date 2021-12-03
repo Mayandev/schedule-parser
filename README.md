@@ -10,11 +10,11 @@
 
 ## 快捷指令
 
-为了简化操作步骤，开发者制作了[快捷指令](https://www.icloud.com/shortcuts/4a4c7d5243b54af3b5c1857e96edf450)，你可以在 iOS、iPadOS、MacOS（需要更新 Monterey 系统）使用。当你复制了一段通知之后，点击快捷指令，便会自动解析通知的文本内容，创建一个新的日程。
+为了简化操作步骤，制作了[快捷指令](https://www.icloud.com/shortcuts/4a4c7d5243b54af3b5c1857e96edf450)，使用者可以在 iOS、iPadOS、MacOS（需要更新 Monterey 系统）使用。当复制了一段通知之后，点击快捷指令，会自动解析通知的文本内容，创建一个新的日程。
 
 ## API 文档
 
-为了方便二次开发，笔者将开发的 API 接口进行开放，有需要的读者可以查阅 [API 文档](https://documenter.getpostman.com/view/6822627/UVJbJy7G)。
+为了方便二次开发，将开发的 API 接口进行开放，可以移步查阅 [API 文档](https://documenter.getpostman.com/view/6822627/UVJbJy7G)。
 
 ![schedule-parse-1](https://mayandev.oss-cn-hangzhou.aliyuncs.com/uPic/schedule-parse-1.png)
 
