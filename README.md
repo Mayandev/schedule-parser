@@ -1,6 +1,6 @@
 # 日程小助手
 
-一个极简的日程解析小程序。给我一段文本，还你一个日程。
+一个极简的日程解析小程序。给我一段文本，还你一个日程。（[设计稿](https://www.figma.com/file/Ovq7IVCrpfxcuXAbwNZyhB/Schedule-Parser-Mini-Program)）
 
 ![schedule-parser-3](https://mayandev.oss-cn-hangzhou.aliyuncs.com/uPic/schedule-parser-3.png)
 
