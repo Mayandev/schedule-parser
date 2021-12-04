@@ -32,6 +32,6 @@
 ```bash
 git clone https://github.com/Mayandev/schedule-parser
 cd schedule-parser/client
-yarn && yarn start
+yarn && yarn dev:weapp
 ```
 
