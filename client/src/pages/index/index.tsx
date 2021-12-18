@@ -38,10 +38,12 @@ export default class Index extends Component {
       });
       
       Taro.hideLoading();
-
-      if (isEmpty(result)) {
+      
+      const { errMsg } = result as any;
+      
+      if (errMsg) {
         // @ts-ignore
-        Taro.showToast({icon: 'error',title: '未解析到时间'});
+        Taro.showToast({icon: 'error',title: errMsg});
         return;
       }
 
@@ -49,6 +51,7 @@ export default class Index extends Component {
         url: `/pages/edit/edit?time=${JSON.stringify(result)}&text=${text}&from=redirect&initTitle=`
       });
     } catch (error) {
+      
         // @ts-ignore
       await Taro.showToast({icon: 'error',title: '网络错误', duration: 2000});
       Taro.hideLoading();

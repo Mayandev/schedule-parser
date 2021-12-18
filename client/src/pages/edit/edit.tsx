@@ -56,7 +56,7 @@ export default function Edit() {
   };
 
   useEffect(() => {
-    if (startTime.diff(CURRENT, "hour") < 24) {
+    if (startTime.diff(CURRENT, "hour") < 24 || startTime.diff(CURRENT, "hour") > -24) {
       setCounterUnit("hour");
     } else {
       setCounterUnit("day");

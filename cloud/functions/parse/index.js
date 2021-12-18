@@ -5,6 +5,11 @@ const cloud = require('wx-server-sdk')
 const { DateTimeRecognizer } = require('@microsoft/recognizers-text-date-time')
 const { flatten, isEmpty, orderBy } =  require('lodash');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Asia/Shanghai');
 // 初始化 cloud
 cloud.init({
   // API 调用都保持和云函数当前所在环境一致
@@ -28,30 +33,40 @@ exports.main = async (event, context) => {
     daterange: 2,
     date: 1,
   };
-
+  const currentTime = dayjs(dayjs.tz(dayjs()).format('YYYY-MM-DD HH:mm:ss'));
   const model = new DateTimeRecognizer(lang).getDateTimeModel();
   // result is an array
   const result = model.parse(text);
-  const times = flatten(result.map((r) => r.resolution.values));
+  const times = flatten(result.map((r) => r.resolution.values)).map((time) => {
+    if (time.type === `time`) {
+      time.value = `${currentTime.format(`YYYY-MM-DD`)} ${time.value}`;
+    }
+    return time;
+  });
 
   if (isEmpty(times)) {
-    return null;
+    return {errMsg: '未监测到时间信息'};
+  }
+
+  const filteredTimes = times.filter((time) =>
+    currentTime.isBefore(dayjs(time.start || time.value)),
+  );
+
+
+  if (isEmpty(filteredTimes)) {
+    return { errMsg: '日程已过期' };
   }
 
   const [targetTime] = orderBy(
-    times,
+    filteredTimes,
     [({ type }) => priority[type] || 0],
     [`desc`],
   );
 
   const { type } = targetTime;
-  if (['time'].includes(type)) {
-    targetTime.start = `${dayjs().format('YYYY-MM-DD')} ${targetTime.value}`
-    targetTime.end = dayjs(targetTime.start)
-      .add(1, `hour`)
-      .format(`YYYY-MM-DD HH:mm:ss`);
-  } else if ([`datetime`, `date`].includes(type)) {
-    targetTime.start = targetTime.value;
+  
+  if ([`datetime`, `date`, `time`].includes(type)) {
+    targetTime.start = dayjs(targetTime.value).format(`YYYY-MM-DD HH:mm:ss`);
     targetTime.end = dayjs(targetTime.start)
       .add(1, `hour`)
       .format(`YYYY-MM-DD HH:mm:ss`);
